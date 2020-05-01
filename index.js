@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const route = require('./route')
+const morgan = require('morgan');
 
 const port = process.env.PORT || 3000;
 
@@ -14,5 +15,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 // parse application/json
 app.use(bodyParser.json())
+
+app.use(morgan('tiny'));
 
 app.use('/api/crawl', route);
