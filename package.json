@@ -15,6 +15,7 @@
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
     "http": "0.0.1-security",
+    "node-geocoder": "^3.27.0",
     "request": "^2.88.2"
   }
 }
