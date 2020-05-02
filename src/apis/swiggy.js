@@ -1,5 +1,4 @@
 const axios = require('axios');
-const Promise = require('bluebird'); // For parallel processing of requests
 
 module.exports = {
     fetch : async (coords, cuisine, restaurants) => {
@@ -19,6 +18,6 @@ module.exports = {
             swiggyRestaurantsData.push(obj);
         });
 
-        restaurants.swiggyRestaurants = swiggyRestaurantsData;
+        return swiggyRestaurantsData;
     }
 }

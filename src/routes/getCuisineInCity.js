@@ -6,14 +6,11 @@ module.exports = async (req, res, next) => {
     const { city, cuisine } = req.params;
 
     const restaurants = {
-        city: null,
-        cuisineName: null,
+        city,
+        cuisineName : cuisine,
         zomatoRestaurants:[],
         swiggyRestaurants:[]
     };
-
-    restaurants.city = city;
-    restaurants.cuisineName = cuisine;
 
     const cords = getLatLongForCity(city);
 
@@ -21,8 +18,8 @@ module.exports = async (req, res, next) => {
         return res.status(400).send('Invalid city');
     }
 
-    await zomatoApi.fetch(city, cuisine, restaurants);
-    await swiggyApi.fetch(cords, cuisine, restaurants);
-    console.log('Done');
+    restaurants.zomatoRestaurants = await zomatoApi.fetch(city, cuisine);
+    restaurants.swiggyRestaurants = await swiggyApi.fetch(cords, cuisine);
+
     res.status(200).send(restaurants);
 }

@@ -2,11 +2,11 @@ const axios = require('axios');
 const Promise = require('bluebird'); // For parallel processing of requests
 const cheerio = require('cheerio'); // For parsing HTML
 
-const crawlZomato = function (url, restaurant, cuisine, restaurants){
-   console.log('Fetching ',url);
+const crawlRestaurant = function (url, restaurant, cuisine, restaurants){
+   console.log('Zomato Fetching ',url);
    return axios.get(url)
         .then((response) => {
-            console.log('Received ', url);
+            console.log('Zomato Received ', url);
             let $ = cheerio.load(response.data);
             let obj = {};
             obj.restaurantName = restaurant;
@@ -20,14 +20,13 @@ const crawlZomato = function (url, restaurant, cuisine, restaurants){
                     obj.dishes.push(dish);
             });
 
-            restaurants.zomatoRestaurants.push(obj);
-            console.log('Finished ', url);
-            return response;
+            console.log('Zomato Finished ', url);
+            return obj;
         });
 }
 
 module.exports = {
-    fetch: async (city, cuisine, restaurants) => {
+    fetch: async (city, cuisine) => {
         const url = `https://www.zomato.com/${city}/restaurants?q=${cuisine}`;
         console.log(url);
         const response = await axios.get(url);
@@ -39,14 +38,13 @@ module.exports = {
                 asyncArray.push({
                     url: $(element).find('.result-title').attr('href') + '/order',
                     restaurant: $(element).find('.result-title').text().trim(),
-                    cuisine,
-                    restaurants
+                    cuisine
                 });
         });
 
         /** Sending parallel Request to each restarants to get cuisines  */
-        return Promise.map(asyncArray, (request) => {
-            return crawlZomato(request.url, request.restaurant, request.cuisine, request.restaurants);
+        return Promise.map(asyncArray.slice(0,10), (request) => {
+            return crawlRestaurant(request.url, request.restaurant, request.cuisine);
         }, {concurrency: 10});
     }
 }
