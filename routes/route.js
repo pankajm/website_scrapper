@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios'); // For sending HTTP requests to Zomato and Swiggy servers
 const async = require('async'); // For parallel processing of requests
-const getLatLng = require('./latlang');
+const getLatLng = require('../constants/latLang');
 const cheerio = require('cheerio'); // For parsing HTML 
+const {getSwiggyUrl, getZomatoUrl} = require('../constants/siteurl');
 let restaurants; 
 
 
@@ -23,13 +24,11 @@ router.get('/:city/:cuisine', (req, res, next) => {
   restaurants.cuisineName = cuisine;
 
   let cords = getLatLng(city);
+  const swiggyUrl = getSwiggyUrl(cords.lat, cords.lng, cuisine);
+  const zomatoUrl = getZomatoUrl(city, cuisine);
 
   if(!cords)
     return res.status(400).send('Invalid city');
-
-  let zomatoUrl = `https://www.zomato.com/${city}/restaurants?q=${cuisine}`;
-  let swiggyUrl = "https://www.swiggy.com/dapi/restaurants/search/"+"v2_2?lat="+cords.lat+"&lng="+cords.lng+"&str="+cuisine+"&withMenuItems=true&sld=false&non_partner_search=false&submitAction=ENTER";
-
 
   /** Get Restaurants data from Swiggy */
 
